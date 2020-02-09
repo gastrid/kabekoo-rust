@@ -1,21 +1,21 @@
 table! {
+    use super::CheeseTypeMapping;
+    use super::MilkMapping;
+    use super::RindMapping;
+    use super::CountryMapping;
     cheeses (id) {
-        id -> Integer,
-        title -> Text,
-        body -> Text,
-        published -> Bool,
-        id -> Integer,
-        name -> Text,
-        photo -> Nullable<Text),
-        milk -> Milk,
-        pasteurised -> Boolean,
-        cheesetype -> CheeseType,
-        rind -> Rind,
-        additive -> Nullable<Text),
-        region -> Nullable<Text),
-        country -> Country,
-        rating -> Integer,
-        comment -> Nullable<Text),
-        maturity -> Integer
+        id -> Int4,
+        name -> Varchar,
+        photo -> Nullable<Varchar>,
+        milk -> Nullable<Milk>,
+        pasteurised -> Nullable<Bool>,
+        cheesetype -> Nullable<CheeseTypeMapping>,
+        rind -> Nullable<Rind>,
+        additive -> Nullable<Varchar>,
+        region -> Nullable<Varchar>,
+        country -> Nullable<Country>,
+        rating -> Nullable<Int4>,
+        comment -> Nullable<Varchar>,
+        maturity -> Nullable<Int4>,
     }
 }

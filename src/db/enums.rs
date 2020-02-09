@@ -1,9 +1,11 @@
+#[derive(DbEnum)]
 pub enum Milk {
     Cow,
     Goat,
     Sheep,
     Other
 }
+#[derive(DbEnum)]
 pub enum CheeseType {
     Fresh,
     Soft,
@@ -14,12 +16,14 @@ pub enum CheeseType {
     PastaFilata,
     Other
 }
+#[derive(DbEnum)]
 pub enum Rind {
     Velvety,
     Washed,
     Natural,
     Na
 }
+#[derive(DbEnum)]
 pub enum Country {
     Fransce,
     England,
