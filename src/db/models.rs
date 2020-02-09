@@ -1,12 +1,14 @@
 
+use super::schema::*;
 
-#[derive(Queryable)]
+#[derive(Insertable, Queryable, Identifiable, Debug, PartialEq)]
+#[table_name = "cheeses"]
 pub struct Cheese {
     pub id: i32,
     pub name: String,
     pub photo: Option(String),
     pub milk: Milk,
-    pub pasteurised: Boolean,
+    pub pasteurised: bool,
     pub cheesetype: CheeseType,
     pub rind: Rind,
     pub additive: Option(String),

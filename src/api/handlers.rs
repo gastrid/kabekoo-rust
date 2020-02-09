@@ -9,8 +9,8 @@ pub fn index() -> &'static str {
 
 #[get("/cheeses")]
 pub fn cheeses() -> &'static str {
-    let connection = db::establish_connection();
-    let results = db::cheeses.filter()
+    let connection = db::conn::establish_connection();
+    let results = db::schema::cheeses.filter()
         .limit(5)
         .load::<db::models::Cheese>(&connection)
         .expect("Error loading posts");
