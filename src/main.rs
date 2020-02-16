@@ -10,6 +10,6 @@ mod db;
 fn main() {
     rocket::ignite().mount("/", routes![
         api::handlers::index,
-        api::handlers::cheeses
+        api::handlers::get_cheeses
         ]).launch();
 }

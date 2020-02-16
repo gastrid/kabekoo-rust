@@ -1,4 +1,4 @@
-#[derive(DbEnum, Debug)]
+#[derive(DbEnum, PartialEq, Debug)]
 pub enum Milk {
     Cow,
     Goat,
@@ -6,7 +6,7 @@ pub enum Milk {
     Other
 }
 
-#[derive(DbEnum, Debug)]
+#[derive(DbEnum, PartialEq, Debug)]
 pub enum CheeseType {
     Fresh,
     Soft,
@@ -19,7 +19,7 @@ pub enum CheeseType {
 }
 
 
-#[derive(DbEnum, Debug)]
+#[derive(DbEnum, PartialEq, Debug)]
 pub enum Rind {
     Velvety,
     Washed,
@@ -28,7 +28,7 @@ pub enum Rind {
 }
 
 
-#[derive(DbEnum, Debug)]
+#[derive(DbEnum, PartialEq, Debug)]
 pub enum Country {
     Fransce,
     England,
@@ -47,17 +47,21 @@ table! {
     use super::MilkMapping;
     use super::RindMapping;
     use super::CountryMapping;
+    use diesel::types::Int4;
+    use diesel::types::Varchar;
+    use diesel::sql_types::Bool;
+    use diesel::sql_types::Nullable;
     cheeses (id) {
         id -> Int4,
         name -> Varchar,
         photo -> Nullable<Varchar>,
-        milk -> Nullable<MilkMapping>,
+        milk -> MilkMapping,
         pasteurised -> Nullable<Bool>,
-        cheesetype -> Nullable<CheeseTypeMapping>,
-        rind -> Nullable<RindMapping>,
+        cheesetype -> CheeseTypeMapping,
+        rind -> RindMapping,
         additive -> Nullable<Varchar>,
         region -> Nullable<Varchar>,
-        country -> Nullable<CountryMapping>,
+        country -> CountryMapping,
         rating -> Nullable<Int4>,
         comment -> Nullable<Varchar>,
         maturity -> Nullable<Int4>,

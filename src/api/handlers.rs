@@ -1,6 +1,7 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 
 use crate::db;
+use diesel::prelude::*;
 
 #[get("/")]
 pub fn index() -> &'static str {
@@ -8,9 +9,10 @@ pub fn index() -> &'static str {
 }
 
 #[get("/cheeses")]
-pub fn cheeses() -> &'static str {
+pub fn get_cheeses() -> &'static str {
+    use db::schema::cheeses::dsl::{cheeses, pasteurised};
     let connection = db::conn::establish_connection();
-    let results = db::schema::cheeses.filter()
+    let results = cheeses.filter(pasteurised.eq(true))
         .limit(5)
         .load::<db::models::Cheese>(&connection)
         .expect("Error loading posts");
@@ -22,5 +24,5 @@ pub fn cheeses() -> &'static str {
         res.push_str(cheese.name);
         res.push_str(cheese.milk);
     }
-    res
+    &res
 }
