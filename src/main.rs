@@ -3,12 +3,20 @@
 #[macro_use] extern crate rocket;
 #[macro_use] extern crate diesel_derive_enum;
 #[macro_use] extern crate diesel;
+#[macro_use] extern crate serde_derive;
+
+
+#[macro_use] extern crate rocket_contrib;
+
 
 mod api;
 mod db;
 
 fn main() {
-    rocket::ignite().mount("/", routes![
+    use api::handlers::CheesesDbConn;
+    rocket::ignite()
+        .attach(CheesesDbConn::fairing())
+        .mount("/", routes![
         api::handlers::index,
         api::handlers::get_cheeses
         ]).launch();

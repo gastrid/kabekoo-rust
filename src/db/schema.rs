@@ -1,4 +1,4 @@
-#[derive(DbEnum, PartialEq, Debug)]
+#[derive(DbEnum, Serialize, Clone, PartialEq, Debug)]
 pub enum Milk {
     Cow,
     Goat,
@@ -6,7 +6,7 @@ pub enum Milk {
     Other
 }
 
-#[derive(DbEnum, PartialEq, Debug)]
+#[derive(DbEnum, Serialize, Clone, PartialEq, Debug)]
 pub enum CheeseType {
     Fresh,
     Soft,
@@ -19,7 +19,7 @@ pub enum CheeseType {
 }
 
 
-#[derive(DbEnum, PartialEq, Debug)]
+#[derive(DbEnum, Serialize, Clone, PartialEq, Debug)]
 pub enum Rind {
     Velvety,
     Washed,
@@ -28,9 +28,9 @@ pub enum Rind {
 }
 
 
-#[derive(DbEnum, PartialEq, Debug)]
+#[derive(DbEnum, Serialize, Clone, PartialEq, Debug)]
 pub enum Country {
-    Fransce,
+    France,
     England,
     Italy,
     Switzerland,
@@ -39,6 +39,63 @@ pub enum Country {
     Scotland,
     Ireland,
     Other
+}
+
+pub trait EnumToPrint {
+    fn to_print(&self) -> &str;
+}
+
+impl EnumToPrint for Milk {
+    fn to_print(&self) -> &str {
+        match self {
+            Milk::Cow => "cow",
+            Milk::Goat => "goat",
+            Milk::Sheep => "sheep",
+            Milk::Other => "other"
+        }
+    }
+}
+
+impl EnumToPrint for CheeseType {
+    fn to_print(&self) -> &str {
+        match self {
+            CheeseType::Fresh => "fresh",
+            CheeseType::Soft => "soft",
+            CheeseType::ColdPressed => "coldPressed",
+            CheeseType::HotPressed => "hotPressed",
+            CheeseType::Hard => "hard",
+            CheeseType::Blue => "blue",
+            CheeseType::PastaFilata => "pastaFilata",
+            CheeseType::Other => "other"
+        }
+    }
+}
+
+impl EnumToPrint for Rind {
+    fn to_print(&self) -> &str {
+        match self {
+            Rind::Velvety => "velvety",
+            Rind::Washed => "washed",
+            Rind::Natural => "natural",
+            Rind::Na => "na"
+        }
+    }
+}
+
+impl EnumToPrint for Country {
+    fn to_print(&self) -> &str {
+        match self {
+            Country::France => "france",
+            Country::England => "england",
+            Country::Italy => "italy",
+            Country::Switzerland => "switzerland",
+            Country::Wales => "wales",
+            Country::Spain => "spain",
+            Country::Scotland => "scotland",
+            Country::Ireland => "ireland",
+            Country::Other => "other"
+        }
+    }
 }
 
 
@@ -56,7 +113,7 @@ table! {
         name -> Varchar,
         photo -> Nullable<Varchar>,
         milk -> MilkMapping,
-        pasteurised -> Nullable<Bool>,
+        pasteurised -> Bool,
         cheesetype -> CheeseTypeMapping,
         rind -> RindMapping,
         additive -> Nullable<Varchar>,
