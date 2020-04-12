@@ -1,2 +1,2 @@
 [global.databases]
-cheeses = { url = "postgres://astriddegaste:@localhost/kabekoo" }
+kabekoo = { url = "postgres://astriddegaste:password@localhost/kabekoo" }

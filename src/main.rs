@@ -12,12 +12,12 @@
 mod api;
 mod db;
 
+
 fn main() {
-    use api::handlers::CheesesDbConn;
     rocket::ignite()
-        .attach(CheesesDbConn::fairing())
+        .attach(db::conn::CheesesDbConn::fairing())
         .mount("/", routes![
-        api::handlers::index,
+        api::handlers::make_cheese,
         api::handlers::get_cheeses
         ]).launch();
 }

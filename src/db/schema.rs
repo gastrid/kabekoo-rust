@@ -1,4 +1,20 @@
-#[derive(DbEnum, Serialize, Clone, PartialEq, Debug)]
+// table! {
+//     use super::MilkMapping;
+//     use diesel::types::Int4;
+//     use diesel::types::Varchar;
+//     use diesel::sql_types::Bool;
+//     use diesel::sql_types::Nullable;
+//     cheeses (id) {
+//         id -> Int4,
+//         name -> Varchar,
+//         photo -> Nullable<Varchar>,
+//         milk -> MilkMapping,
+//         pasteurised -> Bool,
+//     }
+// }
+
+
+#[derive(DbEnum, Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub enum Milk {
     Cow,
     Goat,
@@ -6,7 +22,7 @@ pub enum Milk {
     Other
 }
 
-#[derive(DbEnum, Serialize, Clone, PartialEq, Debug)]
+#[derive(DbEnum, Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub enum CheeseType {
     Fresh,
     Soft,
@@ -19,7 +35,7 @@ pub enum CheeseType {
 }
 
 
-#[derive(DbEnum, Serialize, Clone, PartialEq, Debug)]
+#[derive(DbEnum, Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub enum Rind {
     Velvety,
     Washed,
@@ -28,7 +44,7 @@ pub enum Rind {
 }
 
 
-#[derive(DbEnum, Serialize, Clone, PartialEq, Debug)]
+#[derive(DbEnum, Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub enum Country {
     France,
     England,
@@ -77,7 +93,7 @@ impl EnumToPrint for Rind {
             Rind::Velvety => "velvety",
             Rind::Washed => "washed",
             Rind::Natural => "natural",
-            Rind::Na => "na"
+            Rind::Na => "NA"
         }
     }
 }
@@ -124,3 +140,4 @@ table! {
         maturity -> Nullable<Int4>,
     }
 }
+
