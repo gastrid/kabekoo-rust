@@ -14,7 +14,7 @@
 // }
 
 
-#[derive(DbEnum, Serialize, Deserialize, Clone, PartialEq, Debug)]
+#[derive(DbEnum, Serialize, Deserialize, Clone, PartialEq, Debug, FromFormValue)]
 pub enum Milk {
     Cow,
     Goat,
@@ -22,7 +22,7 @@ pub enum Milk {
     Other
 }
 
-#[derive(DbEnum, Serialize, Deserialize, Clone, PartialEq, Debug)]
+#[derive(DbEnum, Serialize, Deserialize, Clone, PartialEq, Debug, FromFormValue)]
 pub enum CheeseType {
     Fresh,
     Soft,
@@ -35,7 +35,7 @@ pub enum CheeseType {
 }
 
 
-#[derive(DbEnum, Serialize, Deserialize, Clone, PartialEq, Debug)]
+#[derive(DbEnum, Serialize, Deserialize, Clone, PartialEq, Debug, FromFormValue)]
 pub enum Rind {
     Velvety,
     Washed,
@@ -44,7 +44,7 @@ pub enum Rind {
 }
 
 
-#[derive(DbEnum, Serialize, Deserialize, Clone, PartialEq, Debug)]
+#[derive(DbEnum, Serialize, Deserialize, Clone, PartialEq, Debug, FromFormValue)]
 pub enum Country {
     France,
     England,

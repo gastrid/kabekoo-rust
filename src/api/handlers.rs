@@ -6,6 +6,9 @@ use crate::db::schema;
 use db::models::*;
 use rocket::http::Status;
 use rocket_contrib::json::Json;
+use rocket::request::LenientForm;
+use rocket::http::RawStr;
+use rocket::request::FromFormValue;
 
 
 extern crate dotenv;
@@ -20,56 +23,36 @@ use rocket_contrib::databases::diesel;
 
 
 
-pub fn create_cheese(conn: CheesesDbConn, name: &str, photo: &str) -> Cheese {
+#[post("/make_cheese", format = "application/x-www-form-urlencoded", data = "<cheese>")]
+pub fn make_cheese(cheese: LenientForm<TestCheese>, conn: CheesesDbConn) -> String {
     use schema::cheeses;
-
-    let new_cheese = NewCheese {
-        name: name,
-        photo: Option::Some(photo.to_owned()),
-        milk: schema::Milk::Cow,
-        pasteurised: true,
-        cheesetype: schema::CheeseType::Blue,
-        rind: schema::Rind::Na,
-        country: schema::Country::England,
-        additive: Option::None,
-        region: Option::None,
-        rating: Option::None,
-        comment: Option::None,
-        maturity: Option::None
-    };
-
-    diesel::insert_into(cheeses::table)
-        .values(&new_cheese)
-        .get_result(&*conn)
-        .expect("Error saving new cheese")
-}
-
-
-
-// use rocket_contrib::databases::diesel as rockdiesel;
-// #[database("cheeses")]
-// pub struct CheesesDbConn(rockdiesel::PgConnection);
-
-// #[get("/cheeses")]
-// pub fn get_cheeses(conn: CheesesDbConn) -> Result<Json<Vec<Cheese>>, Status> {
-//     use db::schema::cheeses::dsl::*;
-//         cheeses.filter(name.eq("fop"))
-//         .limit(5)
-//         .load::<Cheese>(&*conn)
-//         .map(|chss| Json(chss))
-//         .map_err(|error| Status::NotFound)
     
-// }
+    println!("{:?}", cheese.0);
 
-#[post("/make_cheese")]
-pub fn make_cheese(conn: CheesesDbConn) -> String {
-    
-    let mut name = "Some Title".to_owned();
-    let mut photo = "Some Photo".to_owned();
+    let smth = cheese.into_inner();
+    smth.name
 
+    // let new_cheese = NewCheese{
+    // name: &*smth.name,
+    // photo: smth.photo,
+    // milk: smth.milk,
+    // pasteurised: smth.pasteurised,
+    // cheesetype: smth.cheesetype,
+    // rind: smth.rind,
+    // additive: smth.additive,
+    // region: smth.region,
+    // country: smth.country,
+    // rating: smth.rating,
+    // comment: smth.comment,
+    // maturity: smth.maturity,
+    // };
 
-    let cheese = create_cheese(conn, &name, &photo);
-    name
+    // diesel::insert_into(cheeses::table)
+    //     .values(&new_cheese)
+    //     .get_result::<Cheese>(&*conn)
+    //     .expect("Error saving new cheese");
+    // TODO: add wiki photo stuffc
+    // String::from("Hello")
 }
 
 #[get("/cheeses")]
@@ -92,3 +75,11 @@ pub fn get_cheeses(conn: CheesesDbConn) -> String {
     res
 }
 
+
+
+
+#[derive(FromForm, Debug)]
+pub struct TestCheese {
+    pub name: String,
+
+}

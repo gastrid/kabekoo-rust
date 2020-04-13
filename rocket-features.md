@@ -7,11 +7,6 @@
 # Response
 - Responder wrapper?
 
-# State
-- (here)[https://rocket.rs/v0.4/guide/state/]
-- for the connection
-- connection pool
-
 # Other possibilities
 - fairings
 - 
