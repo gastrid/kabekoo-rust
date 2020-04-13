@@ -1,0 +1,9 @@
+curl -X POST \
+-d 'name=chaource&photo=https://en.wikipedia.org/wiki/Chaource_cheese#/media/File:Chaource_(fromage)_01.jpg&milk=Goat&pasteurised=false&cheesetype=Soft&rind=Velvety&maturity=5&region=Champagne&country=France&rating=5&comment=luvit' \
+-H 'Content-Type: application/x-www-form-urlencoded' \
+http://localhost:8000/make_cheese
+
+
+
+
+&region=Champagne&country=France&rating=5&comment=luvit
