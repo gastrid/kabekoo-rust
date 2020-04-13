@@ -1,21 +1,14 @@
-#![feature(proc_macro_hygiene, decl_macro)]
+
 
 use crate::db;
 use diesel::prelude::*;
 use crate::db::schema;
-use db::models::*;
-use rocket::http::Status;
+
 use rocket_contrib::json::Json;
-use rocket::request::LenientForm;
-use rocket::http::RawStr;
-use rocket::request::FromFormValue;
 
 
 extern crate dotenv;
 
-use diesel::prelude::*;
-use dotenv::dotenv;
-use std::env;
 use crate::db::conn::CheesesDbConn;
 
 use crate::db::models::{NewCheese, Cheese, FormCheese};
@@ -23,52 +16,54 @@ use rocket_contrib::databases::diesel;
 
 
 
-#[post("/make_cheese", format = "application/x-www-form-urlencoded", data = "<cheese>")]
-pub fn make_cheese(cheese: LenientForm<FormCheese>, conn: CheesesDbConn) -> String {
+#[post("/make_cheese", format = "application/json", data = "<cheese>")]
+pub fn make_cheese(cheese: Json<FormCheese>, conn: CheesesDbConn) -> String {
     use schema::cheeses;
-    println!("{:?}", cheese.0);
+    let inner_cheese = cheese.into_inner();
     
 
     let new_cheese = NewCheese{
-    name: &*cheese.0.name,
-    photo: cheese.0.photo,
-    milk: cheese.0.milk,
-    pasteurised: cheese.0.pasteurised,
-    cheesetype: cheese.0.cheesetype,
-    rind: cheese.0.rind,
-    additive: cheese.0.additive,
-    region: cheese.0.region,
-    country: cheese.0.country,
-    rating: cheese.0.rating,
-    comment: cheese.0.comment,
-    maturity: cheese.0.maturity,
+    name: &*inner_cheese.name,
+    photo: inner_cheese.photo,
+    milk: inner_cheese.milk,
+    pasteurised: inner_cheese.pasteurised,
+    cheesetype: inner_cheese.cheesetype,
+    rind: inner_cheese.rind,
+    additive: inner_cheese.additive,
+    region: inner_cheese.region,
+    country: inner_cheese.country,
+    rating: inner_cheese.rating,
+    comment: inner_cheese.comment,
+    maturity: inner_cheese.maturity,
     };
 
     diesel::insert_into(cheeses::table)
         .values(&new_cheese)
         .get_result::<Cheese>(&*conn)
         .expect("Error saving new cheese");
+
     // TODO: add wiki photo stuffc
-    String::from("Hello")
+    // TODO: unwrap better result of get_result
+    String::from("Thumbs up")
 }
 
 #[get("/cheeses")]
-pub fn get_cheeses(conn: CheesesDbConn) -> String {
-    use db::schema::cheeses::dsl::{cheeses, pasteurised};
-    use crate::db::schema::EnumToPrint;
+pub fn get_cheeses(conn: CheesesDbConn) -> Json<Vec<Cheese>> {
+    use db::schema::cheeses::dsl::{cheeses};
 
-    let results = cheeses.filter(pasteurised.eq(true))
-        .limit(5)
+    let results = cheeses
         .load::<db::models::Cheese>(&*conn)
         .expect("Error loading cheeses");
 
-    println!("Displaying {} cheeses", results.len());
-
-    let mut res: String = String::from("");
-    for cheese in results {
-        res.push_str(&cheese.name);
-        res.push_str(&cheese.milk.to_print());
-    }
-    res
+    Json(results)
 }
+
+// #[get("/cheese/<id>")]
+// pub fn get_cheese(id: i32, conn: CheesesDbConn) -> Json<Cheese> {
+//     use db::schema::cheeses::dsl::{cheeses};
+    
+//     cheeses::repository::get(id, &conn)
+//         .map(|cheese| Json(cheese))
+// }
+
 

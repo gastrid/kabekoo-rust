@@ -1,7 +1,7 @@
 
 use super::schema::{cheeses, Milk, CheeseType, Rind, Country};
 
-#[derive(Queryable, Debug)]
+#[derive(Queryable, Debug, Serialize, Deserialize)]
 pub struct Cheese {
     pub id: i32,
     pub name: String,
@@ -18,7 +18,7 @@ pub struct Cheese {
     pub maturity: Option<i32>
 }
 
-#[derive(FromForm, Debug)]
+#[derive(FromForm, Debug, Serialize, Deserialize)]
 pub struct FormCheese {
     pub name: String,
     pub photo: Option<String>,
