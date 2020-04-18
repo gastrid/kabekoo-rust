@@ -17,7 +17,7 @@ use rocket_contrib::databases::diesel;
 
 
 #[post("/make_cheese", format = "application/json", data = "<cheese>")]
-pub fn make_cheese(cheese: Json<FormCheese>, conn: CheesesDbConn) -> String {
+pub fn make_cheese(cheese: Json<FormCheese>, conn: CheesesDbConn) -> Json<Cheese> {
     use schema::cheeses;
     let inner_cheese = cheese.into_inner();
     
@@ -37,14 +37,14 @@ pub fn make_cheese(cheese: Json<FormCheese>, conn: CheesesDbConn) -> String {
     maturity: inner_cheese.maturity,
     };
 
-    diesel::insert_into(cheeses::table)
+    let saved_cheese: Cheese = diesel::insert_into(cheeses::table)
         .values(&new_cheese)
         .get_result::<Cheese>(&*conn)
         .expect("Error saving new cheese");
 
     // TODO: add wiki photo stuffc
     // TODO: unwrap better result of get_result
-    String::from("Thumbs up")
+    Json(saved_cheese)
 }
 
 #[get("/cheeses")]
@@ -58,12 +58,13 @@ pub fn get_cheeses(conn: CheesesDbConn) -> Json<Vec<Cheese>> {
     Json(results)
 }
 
-// #[get("/cheese/<id>")]
-// pub fn get_cheese(id: i32, conn: CheesesDbConn) -> Json<Cheese> {
-//     use db::schema::cheeses::dsl::{cheeses};
+#[get("/cheese/<id>")]
+pub fn get_by_id(id: i32, conn: CheesesDbConn) -> Json<Cheese> {
+    use schema::cheeses;
     
-//     cheeses::repository::get(id, &conn)
-//         .map(|cheese| Json(cheese))
-// }
+    let result = cheeses::table.find(id).first::<db::models::Cheese>(&*conn).expect("Error loading cheese");
+
+    Json(result)
+}
 
 

@@ -18,6 +18,7 @@ fn main() {
         .attach(db::conn::CheesesDbConn::fairing())
         .mount("/", routes![
         api::handlers::make_cheese,
-        api::handlers::get_cheeses
+        api::handlers::get_cheeses,
+        api::handlers::get_by_id,
         ]).launch();
 }

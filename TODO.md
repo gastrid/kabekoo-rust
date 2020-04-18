@@ -4,3 +4,4 @@
 - give get all parameters
 - the wiki parser
 - better error handling
+- user stuff
