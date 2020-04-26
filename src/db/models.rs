@@ -34,18 +34,18 @@ pub struct FormCheese {
     pub maturity: Option<i32>
 }
 
-#[derive(Insertable)]
+#[derive(Insertable, FromForm, AsChangeset, Serialize, Deserialize)]
 #[table_name = "cheeses"]
-pub struct NewCheese<'a> {
-    pub name: &'a str,
+pub struct NewCheese {
+    pub name: String,
     pub photo: Option<String>,
-    pub milk: Milk,
-    pub pasteurised: bool,
-    pub cheesetype: CheeseType,
-    pub rind: Rind,
+    pub milk: Option<Milk>,
+    pub pasteurised: Option<bool>,
+    pub cheesetype: Option<CheeseType>,
+    pub rind: Option<Rind>,
     pub additive: Option<String>,
     pub region: Option<String>,
-    pub country: Country,
+    pub country: Option<Country>,
     pub rating: Option<i32>,
     pub comment: Option<String>,
     pub maturity: Option<i32>

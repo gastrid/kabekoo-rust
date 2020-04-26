@@ -20,5 +20,6 @@ fn main() {
         api::handlers::make_cheese,
         api::handlers::get_cheeses,
         api::handlers::get_by_id,
+        api::handlers::update_cheese,
         ]).launch();
 }

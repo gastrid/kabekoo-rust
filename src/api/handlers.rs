@@ -34,15 +34,15 @@ pub fn make_cheese(cheese: Json<FormCheese>, conn: CheesesDbConn) -> Json<Cheese
     
 
     let new_cheese = NewCheese{
-    name: &*inner_cheese.name,
+    name: inner_cheese.name,
     photo: inner_cheese.photo,
-    milk: inner_cheese.milk,
-    pasteurised: inner_cheese.pasteurised,
-    cheesetype: inner_cheese.cheesetype,
-    rind: inner_cheese.rind,
+    milk: Option::Some(inner_cheese.milk),
+    pasteurised: Option::Some(inner_cheese.pasteurised),
+    cheesetype: Option::Some(inner_cheese.cheesetype),
+    rind: Option::Some(inner_cheese.rind),
     additive: inner_cheese.additive,
     region: inner_cheese.region,
-    country: inner_cheese.country,
+    country: Option::Some(inner_cheese.country),
     rating: inner_cheese.rating,
     comment: inner_cheese.comment,
     maturity: inner_cheese.maturity,
@@ -57,6 +57,20 @@ pub fn make_cheese(cheese: Json<FormCheese>, conn: CheesesDbConn) -> Json<Cheese
     // TODO: unwrap better result of get_result
     Json(saved_cheese)
 }
+
+#[post("/update_cheese/<id>", format = "application/json", data = "<updatedCheese>")]
+pub fn update_cheese(id: i32, updatedCheese: Json<NewCheese>, conn: CheesesDbConn) -> String {
+    let inner_cheese = updatedCheese.into_inner();
+
+    let cheese = cheeses::table.find(id);
+
+    diesel::update(cheese).set(&inner_cheese).execute(&*conn).unwrap();
+
+    // TODO: add wiki photo stuffc
+    // TODO: unwrap better result of get_result
+    String::from("ok")
+}
+
 
 #[get("/cheeses?<filters..>")]
 pub fn get_cheeses(filters: Option<Form<GetFilters>>, conn: CheesesDbConn) -> Json<Vec<Cheese>> {
