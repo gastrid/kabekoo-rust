@@ -27,7 +27,6 @@ pub struct GetFilters {
 }
 
 
-
 #[post("/make_cheese", format = "application/json", data = "<cheese>")]
 pub fn make_cheese(cheese: Json<FormCheese>, conn: CheesesDbConn) -> Json<Cheese> {
     let inner_cheese = cheese.into_inner();
@@ -109,6 +108,18 @@ pub fn get_by_id(id: i32, conn: CheesesDbConn) -> Json<Cheese> {
     let result = cheeses::table.find(id).first::<db::models::Cheese>(&*conn).expect("Error loading cheese");
 
     Json(result)
+}
+
+#[get("/delete_cheese/<id>")]
+pub fn delete(id: i32, conn: CheesesDbConn) -> Result<String, std::io::Error> {
+    
+    let result = diesel::delete(cheeses::table.find(id)).execute(&*conn);
+
+    match result {
+        Ok(x) =>  Result::Ok(String::from("deleted")),
+        Err(x) => Result::Err(x.),
+    }
+
 }
 
 

@@ -1,5 +1,3 @@
-- the update endpoint
-- the delete endpoint
 - the wiki parser
 - better error handling
 - user stuff
