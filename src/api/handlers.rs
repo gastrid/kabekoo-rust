@@ -12,13 +12,24 @@ extern crate dotenv;
 use crate::db::conn::CheesesDbConn;
 
 use crate::db::models::{NewCheese, Cheese, FormCheese};
+use rocket::request::{Form};
+use schema::*;
 use rocket_contrib::databases::diesel;
+
+
+#[derive(FromForm)]
+pub struct GetFilters {
+    pub milk: Option<Milk>,
+    pub pasteurised: Option<bool>,
+    pub cheesetype: Option<CheeseType>,
+    pub rind: Option<Rind>,
+    pub country: Option<Country>,
+}
 
 
 
 #[post("/make_cheese", format = "application/json", data = "<cheese>")]
 pub fn make_cheese(cheese: Json<FormCheese>, conn: CheesesDbConn) -> Json<Cheese> {
-    use schema::cheeses;
     let inner_cheese = cheese.into_inner();
     
 
@@ -47,20 +58,39 @@ pub fn make_cheese(cheese: Json<FormCheese>, conn: CheesesDbConn) -> Json<Cheese
     Json(saved_cheese)
 }
 
-#[get("/cheeses")]
-pub fn get_cheeses(conn: CheesesDbConn) -> Json<Vec<Cheese>> {
-    use db::schema::cheeses::dsl::{cheeses};
+#[get("/cheeses?<filters..>")]
+pub fn get_cheeses(filters: Option<Form<GetFilters>>, conn: CheesesDbConn) -> Json<Vec<Cheese>> {
 
-    let results = cheeses
-        .load::<db::models::Cheese>(&*conn)
-        .expect("Error loading cheeses");
+    let mut query = cheeses::table.into_boxed();
 
-    Json(results)
+
+    if let Some(filters) = filters {
+        if let Some(pasteurised) = filters.pasteurised {
+            query = query.filter(cheeses::pasteurised.eq(pasteurised));
+        } 
+        if let Some(milk) = filters.milk.clone() {
+            query = query.filter(cheeses::milk.eq(milk));
+        } 
+        if let Some(cheesetype) = filters.cheesetype.clone() {
+            query = query.filter(cheeses::cheesetype.eq(cheesetype));
+        } 
+        if let Some(rind) = filters.rind.clone() {
+            query = query.filter(cheeses::rind.eq(rind));
+        } 
+        if let Some(country) = filters.country.clone() {
+            query = query.filter(cheeses::country.eq(country));
+        } 
+
+    }
+    
+    
+    let result =  query.load::<db::models::Cheese>(&*conn)
+    .expect("Error loading cheeses");
+    Json(result)
 }
 
 #[get("/cheese/<id>")]
 pub fn get_by_id(id: i32, conn: CheesesDbConn) -> Json<Cheese> {
-    use schema::cheeses;
     
     let result = cheeses::table.find(id).first::<db::models::Cheese>(&*conn).expect("Error loading cheese");
 
