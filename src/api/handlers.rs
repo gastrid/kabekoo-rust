@@ -71,7 +71,7 @@ pub fn update_cheese(id: i32, updatedCheese: Json<NewCheese>, conn: CheesesDbCon
 
 
 #[get("/cheeses?<filters..>")]
-pub fn get_cheeses(filters: Option<Form<GetFilters>>, conn: CheesesDbConn) -> Json<Vec<Cheese>> {
+pub fn get_cheeses(filters: Option<Form<GetFilters>>, conn: CheesesDbConn) -> Result<Json<Vec<Cheese>>, diesel::result::Error> {
 
     let mut query = cheeses::table.into_boxed();
 
@@ -96,18 +96,23 @@ pub fn get_cheeses(filters: Option<Form<GetFilters>>, conn: CheesesDbConn) -> Js
     }
     
     
-    let result =  query.load::<db::models::Cheese>(&*conn)
-    .expect("Error loading cheeses");
-    Json(result)
+    let result =  query.load::<db::models::Cheese>(&*conn);
+
+    match result {
+        Ok(x) =>  Result::Ok(Json(x)),
+        Err(x) => Result::Err(x),
+    }
 }
 
 #[get("/cheese/<id>")]
-pub fn get_by_id(id: i32, conn: CheesesDbConn) -> Json<Cheese> {
+pub fn get_by_id(id: i32, conn: CheesesDbConn) -> Result<Json<Cheese>, diesel::result::Error> {
     
-    let result = cheeses::table.find(id).first::<db::models::Cheese>(&*conn).expect("Error loading cheese");
+    let result = cheeses::table.find(id).first::<db::models::Cheese>(&*conn);
 
-    Json(result)
-}
+    match result {
+        Ok(x) =>  Result::Ok(Json(x)),
+        Err(x) => Result::Err(x),
+    }}
 
 #[get("/delete_cheese/<id>")]
 pub fn delete(id: i32, conn: CheesesDbConn) -> Result<String, diesel::result::Error> {

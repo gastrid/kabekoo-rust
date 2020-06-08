@@ -4,13 +4,15 @@
 #[macro_use] extern crate diesel_derive_enum;
 #[macro_use] extern crate diesel;
 #[macro_use] extern crate serde_derive;
+extern crate percent_encoding;
 
 
 #[macro_use] extern crate rocket_contrib;
 
 
 mod api;
-mod db;
+pub mod db;
+pub mod parser;
 
 
 fn main() {

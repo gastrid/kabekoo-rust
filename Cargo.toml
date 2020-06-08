@@ -17,6 +17,10 @@ r2d2 = "0.8.3"
 serde = "1.0.82"
 serde_derive = "1.0.82"
 serde_json = "1.0.33"
+percent-encoding = "2.1.0"
+reqwest = { version = "0.10", features = ["json", "blocking"] }
+json = "0.12.4"
+
 
 [dependencies.rocket_contrib]
 version = "0.4.2"
