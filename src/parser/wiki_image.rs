@@ -1,54 +1,44 @@
 extern crate reqwest;
 extern crate json;
 use std::io::{Error, ErrorKind};
-use std::collections::HashMap;
-use serde_json::{from_str, Value, Number};
-use serde::{Deserialize, Serialize};
 
 use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
+use crate::parser::wiki_structs;
 
 use reqwest::blocking;
 
 const FRAGMENT: &AsciiSet = &CONTROLS.add(b' ');
 
 
-
-#[derive(Serialize, Deserialize, Debug)]
-struct Page {
-    pageid: Number,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct Query {
-    search: Vec<Page>
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct PageListResponse {
-    query: Query
-}
-
-
 pub fn get_wiki_image(name: &str) -> Result<&str, Error> {
-    // TODO: removing trailing spaces
+
     let encoded_name = utf8_percent_encode(name, FRAGMENT).to_string();
     let clean_name = encoded_name.trim();
 
     // Step 1: get the pageId
     // TODO: error handling
-    let page_id_url = format!("https://en.wikipedia.org/w/api.php?action=query&list=search&format=json&srsearch={}%20cheese", clean_name);
-    let page_list_response = reqwest::blocking::get(&page_id_url).unwrap().json::<PageListResponse>().unwrap();
+    let page_url = format!("https://en.wikipedia.org/w/api.php?action=query&list=search&format=json&srsearch={}%20cheese", clean_name);
+    let page_list = reqwest::blocking::get(&page_url).unwrap().json::<wiki_structs::PageListResponse>().unwrap();
 
-    let page_id = &page_list_response.query.search[0].pageid;
+    let page_id = &page_list.query.search[0].pageid.to_string();
 
-    println!("{}", page_id);
 
     // Step 2: get the image title
-    let image_title_url = format!("https://en.wikipedia.org/w/api.php?action=query&pageids={}&prop=images&format=json", page_id);
-    let image_list_response = reqwest::blocking::get(&page_id_url).unwrap().json::<Value>().unwrap();
+    let images_url = format!("https://en.wikipedia.org/w/api.php?action=query&pageids={}&prop=images&format=json", page_id);
+    let images_response = reqwest::blocking::get(&images_url).unwrap().json::<wiki_structs::PageImageListResponse>().unwrap();
 
+    let first_image = &images_response.query.pages[&*page_id].images[0].title;
+
+    // Step 3: get URL
+    let encoded_image_name = utf8_percent_encode(first_image, FRAGMENT).to_string();
+    let clean_image_name = encoded_image_name.trim();
     
+
+    let image_prop_url = format!("https://www.mediawiki.org/w/api.php?action=query&titles={}&prop=imageinfo&iiprop=url&format=json", clean_image_name);
+    let image_response = reqwest::blocking::get(&image_prop_url).unwrap().json::<wiki_structs::ImageListResponse>().unwrap();
+
+    let image_url = &image_response.query.pages["-1"].imageinfo[0].url;
     
-    println!("{:?}", image_list_response);
-    Result::Ok("ok")
+    // PICKUP: here, not sure how to deal with this
+    Result::Ok(&String::from(image_url))
 }
