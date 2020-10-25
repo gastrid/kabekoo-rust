@@ -10,7 +10,8 @@ use reqwest::blocking;
 const FRAGMENT: &AsciiSet = &CONTROLS.add(b' ');
 
 
-pub fn get_wiki_image(name: &str) -> Result<&str, Error> {
+pub fn get_wiki_image(name: &str) -> Result<String, Error> {
+    let mut result = String::new();
 
     let encoded_name = utf8_percent_encode(name, FRAGMENT).to_string();
     let clean_name = encoded_name.trim();
@@ -38,7 +39,8 @@ pub fn get_wiki_image(name: &str) -> Result<&str, Error> {
     let image_response = reqwest::blocking::get(&image_prop_url).unwrap().json::<wiki_structs::ImageListResponse>().unwrap();
 
     let image_url = &image_response.query.pages["-1"].imageinfo[0].url;
+    result.push_str(image_url);
     
     // PICKUP: here, not sure how to deal with this
-    Result::Ok(&String::from(image_url))
+    Result::Ok(result)
 }
